@@ -9,6 +9,7 @@ import com.caida.mapper.OrderMapper;
 import com.caida.mapper.OrderItemMapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +25,11 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class AiController {
 
-    private static final String DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions";
-    private static final String API_KEY = "sk-9eaea84cf120461db34a17bf017a6ef4";
+    @Value("${deepseek.api.url:https://api.deepseek.com/v1/chat/completions}")
+    private String deepseekUrl;
+
+    @Value("${deepseek.api.key}")
+    private String apiKey;
 
     @Autowired
     private ProductMapper productMapper;
@@ -288,10 +292,10 @@ public class AiController {
     }
 
     private String sendRequest(String body) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) URI.create(DEEPSEEK_URL).toURL().openConnection();
+        HttpURLConnection conn = (HttpURLConnection) URI.create(deepseekUrl).toURL().openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
-        conn.setRequestProperty("Authorization", "Bearer " + API_KEY);
+        conn.setRequestProperty("Authorization", "Bearer " + apiKey);
         conn.setDoOutput(true);
         conn.setConnectTimeout(20000);
         conn.setReadTimeout(60000);

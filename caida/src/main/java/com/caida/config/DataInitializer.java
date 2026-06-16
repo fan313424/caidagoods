@@ -6,6 +6,7 @@ import com.caida.entity.User;
 import com.caida.mapper.AdminMapper;
 import com.caida.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private DataSource dataSource;
+
+    @Value("${admin.default.password:admin123}")
+    private String adminDefaultPassword;
 
     @Override
     public void run(String... args) {
@@ -56,7 +60,7 @@ public class DataInitializer implements CommandLineRunner {
         if (count == 0) {
             Admin admin = new Admin();
             admin.setUsername("superadmin");
-            admin.setPassword("admin123");
+            admin.setPassword(adminDefaultPassword);
             admin.setRealName("系统管理员");
             admin.setEmail("superadmin@caida.edu.cn");
             admin.setPhone("13900139000");
@@ -66,7 +70,7 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("========================================");
             System.out.println("  默认管理员账号已创建");
             System.out.println("  用户名: superadmin");
-            System.out.println("  密码:   admin123");
+            System.out.println("  密码:   " + adminDefaultPassword);
             System.out.println("========================================");
         }
     }
