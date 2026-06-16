@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <title>帮助中心 - 财大优选</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 帮助中心页面专用样式 */
+        .help-container {
+            min-height: calc(100vh - 200px);
+            padding: 30px 0;
+            background: var(--page-bg);
+        }
+
+        .help-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .help-header h2 {
+            font-size: 30px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .help-header p {
+            font-size: 15px;
+            color: var(--text-light);
+        }
+
+        /* 搜索框 */
+        .help-search {
+            display: flex;
+            max-width: 560px;
+            margin: 0 auto 40px;
+            height: 50px;
+            border: 2px solid var(--main-red);
+            border-radius: 30px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 4px 16px rgba(183, 28, 28, 0.1);
+        }
+
+        .help-search input {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            outline: none;
+            padding: 0 22px;
+            font-size: 15px;
+        }
+
+        .help-search button {
+            width: 120px;
+            border: none;
+            background: var(--main-red);
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .help-search button:hover {
+            background: #991616;
+        }
+
+        /* 快捷入口卡片 */
+        .help-quick {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 40px;
+        }
+
+        .quick-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow-soft);
+            padding: 28px 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .quick-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .quick-card .quick-icon {
+            font-size: 42px;
+            margin-bottom: 14px;
+        }
+
+        .quick-card h4 {
+            font-size: 17px;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .quick-card p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* FAQ区域 */
+        .help-faq {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow-soft);
+            padding: 32px;
+            margin-bottom: 30px;
+        }
+
+        .help-faq h3 {
+            font-size: 24px;
+            color: var(--text-dark);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .faq-category {
+            margin-bottom: 28px;
+        }
+
+        .faq-category:last-child {
+            margin-bottom: 0;
+        }
+
+        .faq-category h4 {
+            font-size: 18px;
+            color: var(--main-red);
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .faq-item {
+            padding: 14px 0;
+            border-bottom: 1px solid #f5f5f5;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            font-size: 15px;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .faq-question .faq-arrow {
+            font-size: 12px;
+            color: #ccc;
+            transition: transform 0.3s;
+        }
+
+        .faq-item.open .faq-arrow {
+            transform: rotate(180deg);
+            color: var(--main-red);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 300px;
+            padding-top: 12px;
+        }
+
+        /* 联系方式 */
+        .help-contact {
+            background: linear-gradient(135deg, var(--main-red), var(--light-red));
+            border-radius: 16px;
+            padding: 36px 40px;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 24px rgba(183, 28, 28, 0.2);
+        }
+
+        .help-contact h3 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .help-contact p {
+            font-size: 15px;
+            opacity: 0.9;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: #fff;
+            color: var(--main-red);
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 900px) {
+            .help-quick {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .help-contact {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .help-quick {
+                grid-template-columns: 1fr;
+            }
+
+            .help-faq {
+                padding: 20px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部快捷导航 -->
+    <div class="topbar">
+        <div class="wrapper topbar-inner">
+            <p>欢迎来到财大优选</p>
+            <ul class="top-links">
+                <li><a href="index.html">返回首页</a></li>
+                <li><a href="orders.html">我的订单</a></li>
+                <li><a href="profile.html">个人中心</a></li>
+                <li><a href="help.html" style="color:#fff;">帮助中心</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 头部 -->
+    <header class="header">
+        <div class="wrapper" style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <div class="logo-area">
+                <a href="index.html"><img src="images/caidaLOGO.jpg" alt="云南财经大学 logo"></a>
+                <div class="site-text">
+                    <h1>财大优选</h1>
+                    <p>校园品质生活购物平台</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 帮助中心主体区域 -->
+    <div class="help-container">
+        <div class="wrapper">
+            <div class="help-header">
+                <h2>帮助中心</h2>
+                <p>我们随时为您提供帮助，请选择以下服务</p>
+            </div>
+
+            <!-- 搜索框 -->
+            <div class="help-search">
+                <input type="text" id="helpSearchInput" placeholder="请输入您遇到的问题，例如：如何退货？">
+                <button type="button" onclick="searchHelp()">搜索</button>
+            </div>
+
+            <!-- 快捷入口 -->
+            <div class="help-quick">
+                <div class="quick-card" onclick="scrollToFaq('order')">
+                    <div class="quick-icon">📦</div>
+                    <h4>订单相关</h4>
+                    <p>订单查询、取消、退换货</p>
+                </div>
+                <div class="quick-card" onclick="scrollToFaq('payment')">
+                    <div class="quick-icon">💳</div>
+                    <h4>支付相关</h4>
+                    <p>支付方式、退款说明</p>
+                </div>
+                <div class="quick-card" onclick="scrollToFaq('delivery')">
+                    <div class="quick-icon">🚚</div>
+                    <h4>物流配送</h4>
+                    <p>配送范围、时效查询</p>
+                </div>
+                <div class="quick-card" onclick="scrollToFaq('account')">
+                    <div class="quick-icon">🔐</div>
+                    <h4>账户相关</h4>
+                    <p>注册登录、密码找回</p>
+                </div>
+            </div>
+
+            <!-- 常见问题 -->
+            <div class="help-faq">
+                <h3>🙋 常见问题</h3>
+
+                <!-- 订单相关 -->
+                <div class="faq-category" id="faq-order">
+                    <h4>📦 订单相关</h4>
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>如何查询我的订单？</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            登录财大优选后，点击页面顶部的"我的订单"即可查看所有订单。您可以通过订单状态（待付款、待收货、已完成）筛选查看不同类型的订单。
+                        </div>
+                    </div>
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>如何取消订单？</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            在"我的订单"页面，找到需要取消的订单，点击"取消订单"按钮即可。注意：只有状态为"待付款"的订单可以取消，已发货的订单请先联系客服处理。
+                        </div>
+                    </div>
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>如何申请退换货？</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            收到商品后7天内，如商品存在质量问题或与描述不符，可在订单详情页点击"申请售后"进行退换货申请。请保留商品原包装及配件，以便快速处理。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 支付相关 -->
+                <div class="faq-category" id="faq-payment">
+                    <h4>💳 支付相关</h4>
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>支持哪些支付方式？</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            财大优选支持多种支付方式，包括：微信支付、支付宝、校园一卡通支付。未来还将开通银行卡快捷支付等功能，方便校园用户使用。
+                        </div>
+                    </div>
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>退款什么时候到账？</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            取消订单或退货成功后，退款将在1-3个工作日内原路返回到您的支付账户。如超过3个工作日仍未收到退款，请联系客服查询处理进度。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 物流配送 -->
+                <div class="faq-category" id="faq-delivery">
+                    <h4>🚚 物流配送</h4>
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>配送范围有哪些？</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            目前财大优选主要覆盖云南财经大学各校区，包括龙泉路校区、呈贡校区等。配送地址填写为校内具体楼栋和宿舍号即可。后续将逐步扩大配送范围。
+                        </div>
+                    </div>
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>一般多久能收到商品？</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            校园内订单通常在1-2个工作日内送达。部分商品支持当日达服务（当日12:00前下单）。您可以在订单详情中实时查看物流状态。
+                        </div>
+                    </div>
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>运费如何计算？</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            校园内订单满39元免运费，不满39元收取5元配送费。大件商品（如电脑、打印机等）可能产生额外运费，具体以结算页面显示为准。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 账户相关 -->
+                <div class="faq-category" id="faq-account">
+                    <h4>🔐 账户相关</h4>
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>如何注册账号？</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            点击页面顶部的"注册"按钮，填写用户名、密码、手机号等基本信息即可完成注册。建议使用校园常用手机号注册，方便后续订单通知和密码找回。
+                        </div>
+                    </div>
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>忘记密码怎么办？</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            在登录页面点击"忘记密码"，通过绑定的手机号或邮箱接收验证码后即可重置密码。如无法自助找回，请联系客服协助处理。
+                        </div>
+                    </div>
+                    <div class="faq-item" onclick="toggleFaq(this)">
+                        <div class="faq-question">
+                            <span>如何修改个人资料？</span>
+                            <span class="faq-arrow">▼</span>
+                        </div>
+                        <div class="faq-answer">
+                            登录后进入"个人中心"，在"个人信息"栏目中可以修改手机号、邮箱、性别等资料。修改完成后点击"保存修改"即可生效。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 联系客服 -->
+            <div class="help-contact">
+                <div>
+                    <h3>📞 还没解决您的问题？</h3>
+                    <p>我们的客服团队随时为您提供帮助</p>
+                </div>
+                <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                    <a href="#" class="contact-btn" onclick="contactOnline(event)">💬 在线客服</a>
+                    <a href="#" class="contact-btn" onclick="contactPhone(event)" style="background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.4);">📱 电话咨询</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="wrapper footer-inner">
+            <div>
+                <h3>财大优选</h3>
+                <p>云南财经大学网页设计课程网页作品</p>
+            </div>
+            <div>
+                <h3>服务支持</h3>
+                <p>帮助中心 / 售后服务 / 物流说明</p>
+            </div>
+            <div>
+                <h3>联系信息</h3>
+                <p>仅用于课程展示，无真实商业用途</p>
+            </div>
+        </div>
+        <p class="copyright">Copyright © 财大优选 All Rights Reserved</p>
+    </footer>
+
+    <!-- 回到顶部 -->
+    <button id="backTop" type="button" aria-label="回到顶部">↑</button>
+
+    <script>
+        // =========================
+        // 登录验证（帮助中心可以不强制登录）
+        // =========================
+        const userInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo');
+        const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+
+        // 更新顶部导航
+        (function updateTopLinks() {
+            const topLinks = document.querySelector('.top-links');
+            if (userInfo && userId) {
+                const user = JSON.parse(userInfo);
+                topLinks.innerHTML = `
+                    <li><span>欢迎，${user.username}</span></li>
+                    <li><a href="#" id="logoutBtn">退出登录</a></li>
+                    <li><a href="orders.html">我的订单</a></li>
+                    <li><a href="profile.html">个人中心</a></li>
+                    <li><a href="help.html" style="color:#fff;">帮助中心</a></li>
+                `;
+                document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('userInfo');
+                    localStorage.removeItem('userId');
+                    sessionStorage.removeItem('userInfo');
+                    sessionStorage.removeItem('userId');
+                    window.location.href = 'login.html';
+                });
+            }
+        })();
+
+        // =========================
+        // FAQ展开/折叠
+        // =========================
+        function toggleFaq(item) {
+            // 切换当前项的展开状态
+            if (item.classList.contains('open')) {
+                item.classList.remove('open');
+            } else {
+                item.classList.add('open');
+            }
+        }
+
+        // 滚动到指定FAQ分类
+        function scrollToFaq(category) {
+            const target = document.getElementById('faq-' + category);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // 高亮效果
+                target.style.transition = 'background 0.6s';
+                target.style.background = '#fff8f8';
+                setTimeout(() => {
+                    target.style.background = '';
+                }, 1500);
+            }
+        }
+
+        // =========================
+        // 帮助搜索
+        // =========================
+        function searchHelp() {
+            const keyword = document.getElementById('helpSearchInput').value.trim();
+            if (!keyword) {
+                showToast('请输入搜索关键词');
+                return;
+            }
+
+            // 搜索FAQ匹配
+            let found = false;
+            const allFaqItems = document.querySelectorAll('.faq-item');
+            allFaqItems.forEach(item => item.classList.remove('open'));
+
+            allFaqItems.forEach(item => {
+                const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+                if (question.includes(keyword.toLowerCase())) {
+                    item.classList.add('open');
+                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    found = true;
+                }
+            });
+
+            if (!found) {
+                showToast('未找到相关问题，请尝试其他关键词或联系客服');
+            } else {
+                showToast(`已为您找到相关问题`);
+            }
+        }
+
+        // 搜索框回车事件
+        document.getElementById('helpSearchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchHelp();
+            }
+        });
+
+        // =========================
+        // 联系客服
+        // =========================
+        function contactOnline(e) {
+            e.preventDefault();
+            showToast('正在为您连接在线客服...');
+        }
+
+        function contactPhone(e) {
+            e.preventDefault();
+            showToast('客服热线：400-XXX-XXXX（服务时间 9:00-21:00）');
+        }
+
+        // Toast提示
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        // =========================
+        // 回到顶部
+        // =========================
+        const backTopBtn = document.getElementById('backTop');
+        if (backTopBtn) {
+            window.addEventListener('scroll', function() {
+                backTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
+            });
+            backTopBtn.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    </script>
+    <script src="ai-chat.js"></script>
+</body>
+</html>

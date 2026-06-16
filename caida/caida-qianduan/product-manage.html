@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <title>商品管理 - 财大优选</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .manage-container { min-height: calc(100vh - 200px); padding: 30px 0; background: var(--page-bg); }
+        .manage-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+        .manage-header h2 { font-size: 26px; color: var(--text-dark); padding-left: 14px; position: relative; }
+        .manage-header h2::before { content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 24px; border-radius: 4px; background: var(--main-red); }
+
+        .toolbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+        .btn { padding: 10px 22px; border: none; border-radius: 24px; font-size: 14px; cursor: pointer; transition: all 0.3s; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: linear-gradient(90deg, var(--main-red), var(--light-red)); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(183,28,28,0.3); }
+        .btn-outline { background: #fff; border: 1px solid #ddd; color: var(--text-normal); }
+        .btn-outline:hover { border-color: var(--main-red); color: var(--main-red); }
+        .btn-xs { padding: 5px 12px; font-size: 12px; border-radius: 16px; }
+        .btn-danger { border: 1px solid #e53935; color: #e53935; background: #fff; }
+        .btn-danger:hover { background: #e53935; color: #fff; }
+        .btn-success { border: 1px solid #2e7d32; color: #2e7d32; background: #fff; }
+        .btn-success:hover { background: #2e7d32; color: #fff; }
+
+        .search-box { display: flex; border: 2px solid #e0e0e0; border-radius: 24px; overflow: hidden; background: #fff; transition: border-color 0.3s; }
+        .search-box:focus-within { border-color: var(--main-red); }
+        .search-box input { border: none; outline: none; padding: 10px 18px; font-size: 14px; width: 200px; }
+        .search-box button { border: none; background: var(--main-red); color: #fff; padding: 10px 18px; cursor: pointer; font-size: 14px; }
+
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow-soft); padding: 20px; text-align: center; }
+        .stat-card .stat-num { font-size: 32px; font-weight: 700; color: var(--main-red); }
+        .stat-card .stat-label { font-size: 13px; color: var(--text-light); margin-top: 4px; }
+
+        .product-table { width: 100%; background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow-soft); overflow: hidden; }
+        .product-table table { width: 100%; border-collapse: collapse; }
+        .product-table thead { background: #fafbfc; }
+        .product-table th { padding: 14px 18px; text-align: left; font-size: 13px; font-weight: 600; color: var(--text-light); border-bottom: 2px solid #f0f0f0; }
+        .product-table td { padding: 14px 18px; font-size: 14px; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+        .product-table tr:hover td { background: #fafbfc; }
+        .p-img { width: 50px; height: 50px; object-fit: contain; background: #fafafa; border-radius: 8px; }
+        .p-name { font-weight: 500; color: var(--text-dark); }
+        .p-price { font-weight: 600; color: #e53935; font-size: 16px; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .badge-on { background: #e8f5e9; color: #2e7d32; }
+        .badge-off { background: #fce4ec; color: #e53935; }
+        .empty-row td { text-align: center; padding: 60px 20px; color: var(--text-light); }
+
+        /* 模态框 */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500; display: none; align-items: center; justify-content: center; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: #fff; border-radius: 18px; width: 540px; max-width: 94vw; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+        .modal-header { padding: 20px 26px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: #fff; z-index: 1; }
+        .modal-header h3 { font-size: 18px; color: var(--text-dark); }
+        .modal-close { background: none; border: none; font-size: 28px; color: #aaa; cursor: pointer; }
+        .modal-close:hover { color: var(--main-red); }
+        .modal-body { padding: 24px 26px; }
+        .modal-footer { padding: 16px 26px 24px; display: flex; justify-content: flex-end; gap: 12px; }
+        .form-row { margin-bottom: 16px; }
+        .form-row label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; color: var(--text-dark); }
+        .form-row input, .form-row select, .form-row textarea { width: 100%; padding: 10px 14px; border: 2px solid #e8e8e8; border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.3s; font-family: inherit; }
+        .form-row input:focus, .form-row textarea:focus, .form-row select:focus { border-color: var(--main-red); }
+        .form-row textarea { min-height: 80px; resize: vertical; }
+        .form-inline { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        @media (max-width: 768px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .form-inline { grid-template-columns: 1fr; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .search-box input { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部快捷导航 -->
+    <div class="topbar">
+        <div class="wrapper topbar-inner">
+            <p>欢迎来到财大优选</p>
+            <ul class="top-links" id="topLinks">
+                <li><a href="login.html">登录</a></li>
+                <li><a href="register.html">注册</a></li>
+                <li><a href="orders.html">我的订单</a></li>
+                <li><a href="profile.html">个人中心</a></li>
+                <li><a href="help.html">帮助中心</a></li>
+                <li><a href="product-manage.html" style="color:#fff;">商品管理</a></li>
+                <li><a href="order-manage.html">订单管理</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 头部 -->
+    <header class="header">
+        <div class="wrapper" style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <div class="logo-area">
+                <a href="index.html"><img src="images/caidaLOGO.jpg" alt="云南财经大学 logo"></a>
+                <div class="site-text">
+                    <h1>财大优选</h1>
+                    <p>校园品质生活购物平台</p>
+                </div>
+            </div>
+            <nav class="main-nav" style="margin:0;">
+                <a href="index.html">首页</a>
+                <a href="product-manage.html" style="opacity:1;font-weight:600;">商品管理</a>
+                <a href="order-manage.html">订单管理</a>
+                <a href="orders.html">我的订单</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 主体 -->
+    <div class="manage-container">
+        <div class="wrapper">
+            <div class="manage-header">
+                <h2>商品管理</h2>
+                <button class="btn btn-primary" onclick="openAddModal()">＋ 新增商品</button>
+            </div>
+
+            <!-- 统计 -->
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-num" id="totalCount">0</div><div class="stat-label">全部商品</div></div>
+                <div class="stat-card"><div class="stat-num" id="activeCount" style="color:#2e7d32;">0</div><div class="stat-label">已上架</div></div>
+                <div class="stat-card"><div class="stat-num" id="inactiveCount" style="color:#e53935;">0</div><div class="stat-label">已下架</div></div>
+                <div class="stat-card"><div class="stat-num" id="categoryCount">0</div><div class="stat-label">商品分类</div></div>
+            </div>
+
+            <!-- 搜索+刷新 -->
+            <div class="toolbar">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="搜索商品名称..." onkeyup="if(event.key==='Enter')searchProducts()">
+                    <button onclick="searchProducts()">搜索</button>
+                </div>
+                <button class="btn btn-outline" onclick="loadProducts()">🔄 刷新</button>
+                <select id="filterStatus" onchange="searchProducts()" style="padding:10px 14px;border:2px solid #e0e0e0;border-radius:24px;font-size:14px;outline:none;">
+                    <option value="all">全部状态</option>
+                    <option value="1">已上架</option>
+                    <option value="0">已下架</option>
+                </select>
+            </div>
+
+            <!-- 商品表格 -->
+            <div class="product-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>商品信息</th>
+                            <th>价格</th>
+                            <th>分类</th>
+                            <th>库存</th>
+                            <th>状态</th>
+                            <th style="width:200px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="6" class="empty-row">正在加载商品数据...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="wrapper footer-inner">
+            <div><h3>财大优选</h3><p>云南财经大学网页设计课程网页作品</p></div>
+            <div><h3>服务支持</h3><p>帮助中心 / 售后服务 / 物流说明</p></div>
+            <div><h3>管理功能</h3><p>商品管理 / 订单管理</p></div>
+            <div><h3>联系信息</h3><p>仅用于课程展示，无真实商业用途</p></div>
+        </div>
+        <p class="copyright">Copyright © 财大优选 All Rights Reserved</p>
+    </footer>
+
+    <!-- 新增/编辑模态框 -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">新增商品</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editId">
+                <div class="form-row"><label>商品名称 *</label><input type="text" id="prodName" placeholder="请输入商品名称" required></div>
+                <div class="form-row"><label>商品描述</label><textarea id="prodDesc" placeholder="请输入商品描述"></textarea></div>
+                <div class="form-inline">
+                    <div class="form-row"><label>价格 (￥) *</label><input type="number" id="prodPrice" placeholder="0.00" step="0.01" min="0" required></div>
+                    <div class="form-row"><label>库存</label><input type="number" id="prodStock" placeholder="0" min="0" value="0"></div>
+                </div>
+                <div class="form-inline">
+                    <div class="form-row">
+                        <label>分类</label>
+                        <select id="prodCategory">
+                            <option value="">请选择分类</option>
+                            <option value="手机数码">手机数码</option>
+                            <option value="电脑办公">电脑办公</option>
+                            <option value="家用电器">家用电器</option>
+                            <option value="美容美妆">美容美妆</option>
+                            <option value="服装配饰">服装配饰</option>
+                            <option value="运动户外">运动户外</option>
+                            <option value="日用百货">日用百货</option>
+                        </select>
+                    </div>
+                    <div class="form-row"><label>图片路径</label><input type="text" id="prodImage" placeholder="例如：images/goods01.png"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveProduct()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <button id="backTop" type="button" aria-label="回到顶部">↑</button>
+
+    <script>
+        const userInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo');
+        const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+        const isLoggedIn = !!(userInfo && userId);
+
+        // 权限校验：只有超级管理员可访问
+        if (!isLoggedIn) { window.location.href = 'login.html'; }
+        const user = JSON.parse(userInfo);
+        const isAdmin = user.role === 1;
+        if (!isAdmin) { alert('您没有管理权限，请使用管理员账号登录'); window.location.href = 'index.html'; }
+
+        // 更新顶部导航
+        document.getElementById('topLinks').innerHTML = `
+            <li><span>欢迎，${user.username} [管理员]</span></li>
+            <li><a href="#" id="logoutBtn">退出登录</a></li>
+            <li><a href="orders.html">我的订单</a></li>
+            <li><a href="profile.html">个人中心</a></li>
+            <li><a href="help.html">帮助中心</a></li>
+            <li><a href="product-manage.html" style="color:#fff;">商品管理</a></li>
+            <li><a href="order-manage.html">订单管理</a></li>
+        `;
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.clear(); sessionStorage.clear();
+            window.location.href = 'login.html';
+        });
+
+        const API = '/api/admin/products';
+        let allProducts = [];
+
+        async function loadProducts() {
+            try {
+                const res = await fetch(API);
+                const r = await res.json();
+                if (r.code === 200) allProducts = r.data || [];
+                else allProducts = [];
+            } catch (e) { allProducts = []; }
+            renderTable(allProducts);
+            updateStats();
+        }
+
+        function searchProducts() {
+            const kw = document.getElementById('searchInput').value.trim().toLowerCase();
+            const fs = document.getElementById('filterStatus').value;
+            let list = allProducts;
+            if (fs !== 'all') list = list.filter(p => p.status === parseInt(fs));
+            if (kw) list = list.filter(p => p.name.toLowerCase().includes(kw) || (p.category && p.category.includes(kw)));
+            renderTable(list);
+        }
+
+        function renderTable(list) {
+            const tb = document.getElementById('tableBody');
+            if (!list.length) { tb.innerHTML = '<tr><td colspan="6" class="empty-row">暂无商品数据，点击右上角"新增商品"添加</td></tr>'; return; }
+            tb.innerHTML = list.map(p => `
+                <tr>
+                    <td><div style="display:flex;align-items:center;gap:12px;"><img src="${p.imageUrl||'images/goods01.png'}" class="p-img" alt="${p.name}" onerror="this.src='images/goods01.png'"><span class="p-name">${p.name}</span></div></td>
+                    <td class="p-price">￥${(p.price||0).toFixed(2)}</td>
+                    <td>${p.category||'-'}</td>
+                    <td>${p.stock||0}</td>
+                    <td><span class="badge ${p.status===1?'badge-on':'badge-off'}">${p.status===1?'上架':'下架'}</span></td>
+                    <td>
+                        <button class="btn btn-outline btn-xs" onclick="openEditModal(${p.id})">编辑</button>
+                        <button class="btn btn-xs ${p.status===1?'btn-danger':'btn-success'}" onclick="toggleStatus(${p.id})">${p.status===1?'下架':'上架'}</button>
+                        <button class="btn btn-danger btn-xs" onclick="deleteProduct(${p.id})">删除</button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('totalCount').textContent = allProducts.length;
+            document.getElementById('activeCount').textContent = allProducts.filter(p => p.status === 1).length;
+            document.getElementById('inactiveCount').textContent = allProducts.filter(p => p.status === 0).length;
+            const cats = new Set(allProducts.map(p => p.category).filter(Boolean));
+            document.getElementById('categoryCount').textContent = cats.size;
+        }
+
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = '新增商品';
+            ['editId','prodName','prodDesc','prodPrice','prodStock','prodCategory','prodImage'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('prodStock').value = '0';
+            document.getElementById('productModal').classList.add('show');
+        }
+
+        async function openEditModal(id) {
+            let p = allProducts.find(x => x.id === id);
+            if (!p) { try { const r = await fetch(`${API}/${id}`); const j = await r.json(); if (j.code===200) p=j.data; } catch(e){} }
+            if (!p) return showToast('商品不存在');
+            document.getElementById('modalTitle').textContent = '编辑商品';
+            document.getElementById('editId').value = p.id;
+            document.getElementById('prodName').value = p.name||'';
+            document.getElementById('prodDesc').value = p.description||'';
+            document.getElementById('prodPrice').value = p.price||'';
+            document.getElementById('prodStock').value = p.stock||0;
+            document.getElementById('prodCategory').value = p.category||'';
+            document.getElementById('prodImage').value = p.imageUrl||'';
+            document.getElementById('productModal').classList.add('show');
+        }
+
+        function closeModal() { document.getElementById('productModal').classList.remove('show'); }
+
+        document.getElementById('productModal').addEventListener('click', function(e) { if (e.target===this) closeModal(); });
+
+        async function saveProduct() {
+            const id = document.getElementById('editId').value;
+            const body = {
+                name: document.getElementById('prodName').value.trim(),
+                description: document.getElementById('prodDesc').value.trim(),
+                price: document.getElementById('prodPrice').value,
+                stock: document.getElementById('prodStock').value,
+                category: document.getElementById('prodCategory').value,
+                imageUrl: document.getElementById('prodImage').value.trim()
+            };
+            if (!body.name || !body.price || parseFloat(body.price) < 0) return showToast('请填写商品名称和有效价格');
+            try {
+                const res = await fetch(id ? `${API}/${id}` : API, {
+                    method: id ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const r = await res.json();
+                if (r.code === 200) { showToast(id?'更新成功':'添加成功'); closeModal(); loadProducts(); }
+                else showToast(r.message||'操作失败');
+            } catch(e) { showToast('网络错误'); }
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('确定删除该商品？不可恢复！')) return;
+            try { const r = await fetch(`${API}/${id}`, { method: 'DELETE' }); const j = await r.json();
+                if (j.code===200) { showToast('已删除'); loadProducts(); } else showToast(j.message); }
+            catch(e) { showToast('网络错误'); }
+        }
+
+        async function toggleStatus(id) {
+            try { const r = await fetch(`${API}/${id}/toggle-status`, { method: 'PUT' }); const j = await r.json();
+                if (j.code===200) { showToast(j.message); loadProducts(); } else showToast(j.message); }
+            catch(e) { showToast('网络错误'); }
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'toast'; t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.classList.add('show'), 10);
+            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 2000);
+        }
+
+        // 回到顶部
+        const btt = document.getElementById('backTop');
+        if (btt) { window.addEventListener('scroll', () => btt.style.display = window.scrollY > 300 ? 'block' : 'none');
+            btt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' })); }
+
+        loadProducts();
+    </script>
+    <script src="ai-chat.js"></script>
+</body>
+</html>

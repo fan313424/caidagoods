@@ -1,0 +1,146 @@
+
+.employee-list-container.data-v-1620ec36 {
+  min-height: 100vh;
+  background: #F5F5F5;
+  display: flex;
+  flex-direction: column;
+}
+.search-bar.data-v-1620ec36 {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  padding: 20rpx;
+  gap: 20rpx;
+}
+.search-bar input.data-v-1620ec36 {
+  flex: 1;
+  height: 70rpx;
+  background: #F5F5F5;
+  border-radius: 35rpx;
+  padding: 0 30rpx;
+  font-size: 28rpx;
+}
+.search-btn.data-v-1620ec36 {
+  width: 140rpx;
+  height: 70rpx;
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8E53 100%);
+  color: #FFFFFF;
+  border-radius: 35rpx;
+  font-size: 28rpx;
+  border: none;
+  line-height: 70rpx;
+}
+.search-btn.data-v-1620ec36::after {
+  border: none;
+}
+.filter-bar.data-v-1620ec36 {
+  display: flex;
+  background: #FFFFFF;
+  padding: 20rpx;
+  gap: 20rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+.filter-item.data-v-1620ec36 {
+  flex: 1;
+  text-align: center;
+  padding: 15rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  border-radius: 30rpx;
+  background: #F5F5F5;
+}
+.filter-item.active.data-v-1620ec36 {
+  background: linear-gradient(135deg, #FF6B35 0%, #FF8E53 100%);
+  color: #FFFFFF;
+}
+.employee-scroll.data-v-1620ec36 {
+  flex: 1;
+  height: 0;
+}
+.employee-list.data-v-1620ec36 {
+  padding: 20rpx;
+}
+.employee-item.data-v-1620ec36 {
+  background: #FFFFFF;
+  border-radius: 15rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+.employee-header.data-v-1620ec36 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+.employee-info.data-v-1620ec36 {
+  flex: 1;
+}
+.name-row.data-v-1620ec36 {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+  margin-bottom: 10rpx;
+}
+.employee-name.data-v-1620ec36 {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+.employee-status.data-v-1620ec36 {
+  padding: 5rpx 15rpx;
+  background: #E8F5E9;
+  color: #4CAF50;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+}
+.employee-status.disabled.data-v-1620ec36 {
+  background: #FFEBEE;
+  color: #F44336;
+}
+.employee-no.data-v-1620ec36 {
+  font-size: 24rpx;
+  color: #999;
+}
+.employee-details.data-v-1620ec36 {
+  margin-bottom: 20rpx;
+}
+.detail-item.data-v-1620ec36 {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+.detail-label.data-v-1620ec36 {
+  font-size: 26rpx;
+  color: #999;
+  width: 100rpx;
+}
+.detail-value.data-v-1620ec36 {
+  font-size: 26rpx;
+  color: #333;
+  flex: 1;
+}
+.employee-actions.data-v-1620ec36 {
+  display: flex;
+  justify-content: flex-end;
+}
+.action-btn.data-v-1620ec36 {
+  padding: 15rpx 30rpx;
+  background: #FF4444;
+  color: #FFFFFF;
+  border-radius: 30rpx;
+  font-size: 24rpx;
+}
+.action-btn.enable-btn.data-v-1620ec36 {
+  background: #4CAF50;
+}
+.loading-tip.data-v-1620ec36,
+.no-more.data-v-1620ec36,
+.empty.data-v-1620ec36 {
+  text-align: center;
+  padding: 40rpx;
+  font-size: 28rpx;
+  color: #999;
+}
+

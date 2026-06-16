@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <title>订单管理 - 财大优选</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .manage-container { min-height: calc(100vh - 200px); padding: 30px 0; background: var(--page-bg); }
+        .manage-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+        .manage-header h2 { font-size: 26px; color: var(--text-dark); padding-left: 14px; position: relative; }
+        .manage-header h2::before { content: ""; position: absolute; left: 0; top: 8px; width: 5px; height: 24px; border-radius: 4px; background: var(--main-red); }
+        .btn { padding: 10px 22px; border: none; border-radius: 24px; font-size: 14px; cursor: pointer; transition: all 0.3s; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: linear-gradient(90deg, var(--main-red), var(--light-red)); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(183,28,28,0.3); }
+        .btn-outline { background: #fff; border: 1px solid #ddd; color: var(--text-normal); }
+        .btn-outline:hover { border-color: var(--main-red); color: var(--main-red); }
+        .btn-xs { padding: 5px 14px; font-size: 12px; border-radius: 16px; }
+        .btn-success { border: 1px solid #2e7d32; color: #2e7d32; background: #fff; }
+        .btn-success:hover { background: #2e7d32; color: #fff; }
+        .btn-danger { border: 1px solid #e53935; color: #e53935; background: #fff; }
+        .btn-danger:hover { background: #e53935; color: #fff; }
+
+        .order-tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 2px solid #eee; }
+        .order-tab { padding: 10px 22px; border: none; background: none; font-size: 15px; color: var(--text-light); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.3s; }
+        .order-tab:hover { color: var(--main-red); }
+        .order-tab.active { color: var(--main-red); font-weight: 600; border-bottom-color: var(--main-red); }
+
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow-soft); padding: 20px; text-align: center; }
+        .stat-card .stat-num { font-size: 32px; font-weight: 700; color: var(--main-red); }
+        .stat-card .stat-label { font-size: 13px; color: var(--text-light); margin-top: 4px; }
+
+        .order-list { display: flex; flex-direction: column; gap: 16px; }
+        .order-card { background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow-soft); overflow: hidden; transition: all 0.3s; }
+        .order-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+        .order-card-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 22px; background: #fafafa; border-bottom: 1px solid #f0f0f0; font-size: 14px; color: var(--text-light); flex-wrap: wrap; gap: 8px; }
+        .order-no { color: var(--text-dark); font-weight: 500; }
+        .order-user { color: var(--main-red); font-weight: 500; }
+        .order-status { font-weight: 600; font-size: 13px; }
+        .order-status.paid { color: #e65100; }
+        .order-status.delivered { color: #2e7d32; }
+        .order-status.cancelled { color: #999; }
+
+        .order-card-body { display: flex; align-items: center; padding: 16px 22px; gap: 16px; }
+        .order-card-body + .order-card-body { border-top: 1px dashed #eee; }
+        .order-pimg { width: 60px; height: 60px; object-fit: contain; background: #fafafa; border-radius: 10px; flex-shrink: 0; }
+        .order-pinfo { flex: 1; min-width: 0; }
+        .order-pname { font-size: 15px; font-weight: 500; color: var(--text-dark); }
+        .order-pdesc { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+        .order-pprice { font-size: 16px; color: #e53935; font-weight: bold; }
+
+        .order-card-footer { display: flex; justify-content: space-between; align-items: center; padding: 14px 22px; border-top: 1px solid #f0f0f0; flex-wrap: wrap; gap: 12px; }
+        .order-total { font-size: 14px; color: var(--text-light); }
+        .order-total strong { color: #e53935; font-size: 18px; }
+
+        .empty-state { text-align: center; padding: 80px 20px; background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow-soft); }
+        .empty-state .empty-icon { font-size: 64px; opacity: 0.3; margin-bottom: 16px; }
+        .empty-state p { color: var(--text-light); }
+
+        @media (max-width: 768px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .order-card-header { flex-direction: column; align-items: flex-start; }
+            .order-card-body { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="wrapper topbar-inner">
+            <p>欢迎来到财大优选</p>
+            <ul class="top-links" id="topLinks">
+                <li><a href="login.html">登录</a></li>
+                <li><a href="register.html">注册</a></li>
+                <li><a href="orders.html">我的订单</a></li>
+                <li><a href="profile.html">个人中心</a></li>
+                <li><a href="help.html">帮助中心</a></li>
+                <li><a href="product-manage.html">商品管理</a></li>
+                <li><a href="order-manage.html" style="color:#fff;">订单管理</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="wrapper" style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <div class="logo-area">
+                <a href="index.html"><img src="images/caidaLOGO.jpg" alt="云南财经大学 logo"></a>
+                <div class="site-text">
+                    <h1>财大优选</h1>
+                    <p>校园品质生活购物平台</p>
+                </div>
+            </div>
+            <nav class="main-nav" style="margin:0;">
+                <a href="index.html">首页</a>
+                <a href="product-manage.html">商品管理</a>
+                <a href="order-manage.html" style="opacity:1;font-weight:600;">订单管理</a>
+                <a href="orders.html">我的订单</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="manage-container">
+        <div class="wrapper">
+            <div class="manage-header">
+                <h2>订单管理</h2>
+                <button class="btn btn-outline" onclick="loadOrders()">🔄 刷新</button>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card"><div class="stat-num" id="statAll">0</div><div class="stat-label">全部订单</div></div>
+                <div class="stat-card"><div class="stat-num" id="statPaid" style="color:#e65100;">0</div><div class="stat-label">已付款</div></div>
+                <div class="stat-card"><div class="stat-num" id="statDone" style="color:#2e7d32;">0</div><div class="stat-label">已完成</div></div>
+                <div class="stat-card"><div class="stat-num" id="statCancel" style="color:#999;">0</div><div class="stat-label">已取消</div></div>
+            </div>
+
+            <div class="order-tabs">
+                <button class="order-tab active" data-status="all">全部</button>
+                <button class="order-tab" data-status="paid">已付款</button>
+                <button class="order-tab" data-status="delivered">已完成</button>
+                <button class="order-tab" data-status="cancelled">已取消</button>
+            </div>
+
+            <div class="order-list" id="orderList"></div>
+            <div class="empty-state" id="emptyState" style="display:none;">
+                <div class="empty-icon">📋</div>
+                <h3>暂无订单</h3>
+                <p>还没有任何订单数据</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="wrapper footer-inner">
+            <div><h3>财大优选</h3><p>云南财经大学网页设计课程网页作品</p></div>
+            <div><h3>服务支持</h3><p>帮助中心 / 售后服务 / 物流说明</p></div>
+            <div><h3>管理功能</h3><p>商品管理 / 订单管理</p></div>
+            <div><h3>联系信息</h3><p>仅用于课程展示，无真实商业用途</p></div>
+        </div>
+        <p class="copyright">Copyright © 财大优选 All Rights Reserved</p>
+    </footer>
+
+    <button id="backTop" type="button" aria-label="回到顶部">↑</button>
+
+    <script>
+        const userInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo');
+        const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+        const isLoggedIn = !!(userInfo && userId);
+
+        // 权限校验：只有超级管理员可访问
+        if (!isLoggedIn) { window.location.href = 'login.html'; }
+        const user = JSON.parse(userInfo);
+        const isAdmin = user.role === 1;
+        if (!isAdmin) { alert('您没有管理权限，请使用管理员账号登录'); window.location.href = 'index.html'; }
+
+        document.getElementById('topLinks').innerHTML = `
+            <li><span>欢迎，${user.username} [管理员]</span></li>
+            <li><a href="#" id="logoutBtn">退出登录</a></li>
+            <li><a href="orders.html">我的订单</a></li>
+            <li><a href="profile.html">个人中心</a></li>
+            <li><a href="help.html">帮助中心</a></li>
+            <li><a href="product-manage.html">商品管理</a></li>
+            <li><a href="order-manage.html" style="color:#fff;">订单管理</a></li>
+        `;
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault(); localStorage.clear(); sessionStorage.clear();
+            window.location.href = 'login.html';
+        });
+
+        function getStatusText(s) { return {paid:'已付款',delivered:'已完成',cancelled:'已取消'}[s] || s; }
+
+        const API = '/api/admin';
+        let allOrders = [];
+
+        async function loadOrders() {
+            try {
+                const r = await fetch(`${API}/orders`);
+                const j = await r.json();
+                allOrders = (j.code === 200 && j.data) ? j.data : [];
+            } catch(e) { allOrders = []; }
+            renderOrders('all');
+            updateStats();
+        }
+
+        function renderOrders(filter) {
+            const list = document.getElementById('orderList');
+            const empty = document.getElementById('emptyState');
+            let orders = filter === 'all' ? allOrders : allOrders.filter(o => o.status === filter);
+
+            if (!orders.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+            empty.style.display = 'none';
+
+            list.innerHTML = orders.map(o => {
+                const time = (o.createTime||'').replace('T',' ').substring(0,19);
+                const items = o.items || [];
+                const itemsHtml = items.map(it => `
+                    <div class="order-card-body">
+                        <img src="${it.productImage||'images/goods01.png'}" class="order-pimg" alt="${it.productName}" onerror="this.src='images/goods01.png'">
+                        <div class="order-pinfo">
+                            <div class="order-pname">${it.productName}</div>
+                            <div class="order-pdesc">${it.productDesc||''}</div>
+                            <div class="order-pprice">￥${(it.totalPrice||0).toFixed(2)}</div>
+                        </div>
+                        <span style="color:#888;font-size:13px;">×${it.quantity}</span>
+                    </div>`).join('');
+
+                return `<div class="order-card">
+                    <div class="order-card-header">
+                        <span>订单号：<span class="order-no">${o.orderNo}</span></span>
+                        <span>用户ID：<span class="order-user">${o.userId}</span></span>
+                        <span>${time}</span>
+                        <span class="order-status ${o.status}">${getStatusText(o.status)}</span>
+                    </div>
+                    ${itemsHtml}
+                    <div class="order-card-footer">
+                        <span class="order-total">共 ${items.length} 件，合计 <strong>￥${(o.totalAmount||0).toFixed(2)}</strong></span>
+                        <div style="display:flex;gap:8px;">${getActions(o)}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function getActions(o) {
+            if (o.status === 'paid') return `<button class="btn btn-success btn-xs" onclick="shipOrder(${o.id})">标记发货</button><button class="btn btn-danger btn-xs" onclick="cancelManageOrder(${o.id})">取消</button>`;
+            if (o.status === 'delivered') return `<span style="color:#2e7d32;font-size:13px;">已完成</span>`;
+            if (o.status === 'cancelled') return `<span style="color:#999;font-size:13px;">已取消</span>`;
+            return '';
+        }
+
+        function updateStats() {
+            document.getElementById('statAll').textContent = allOrders.length;
+            document.getElementById('statPaid').textContent = allOrders.filter(o => o.status==='paid').length;
+            document.getElementById('statDone').textContent = allOrders.filter(o => o.status==='delivered').length;
+            document.getElementById('statCancel').textContent = allOrders.filter(o => o.status==='cancelled').length;
+        }
+
+        // 标签切换
+        document.querySelectorAll('.order-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.order-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                renderOrders(this.dataset.status);
+            });
+        });
+
+        async function shipOrder(id) {
+            try {
+                const r = await fetch(`${API}/orders/${id}/ship`, { method: 'PUT' });
+                const j = await r.json();
+                showToast(j.code===200 ? '已标记发货' : (j.message||'操作失败'));
+                if (j.code===200) loadOrders();
+            } catch(e) { showToast('网络错误'); }
+        }
+
+        async function cancelManageOrder(id) {
+            if (!confirm('确定取消此订单？')) return;
+            try {
+                const r = await fetch(`${API}/orders/${id}/cancel`, { method: 'PUT' });
+                const j = await r.json();
+                showToast(j.code===200 ? '已取消' : (j.message||'操作失败'));
+                if (j.code===200) loadOrders();
+            } catch(e) { showToast('网络错误'); }
+        }
+
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'toast'; t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.classList.add('show'), 10);
+            setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 2000);
+        }
+
+        const btt = document.getElementById('backTop');
+        if (btt) { window.addEventListener('scroll', () => btt.style.display = window.scrollY > 300 ? 'block' : 'none');
+            btt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' })); }
+
+        loadOrders();
+    </script>
+    <script src="ai-chat.js"></script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <title>登录 - 财大优选</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 顶部快捷导航 -->
+    <div class="topbar">
+        <div class="wrapper topbar-inner">
+            <p>欢迎来到财大优选</p>
+            <ul class="top-links">
+                <li><a href="login.html">登录</a></li>
+                <li><a href="register.html">注册</a></li>
+                <li><a href="index.html">返回首页</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 登录主体区域 -->
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <img src="images/caidaLOGO.jpg" alt="财大优选Logo" class="auth-logo">
+                <h2>用户登录</h2>
+                <p>欢迎回到财大优选</p>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="username">用户名</label>
+                    <input type="text" id="username" name="username" placeholder="请输入用户名" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" placeholder="请输入密码" required>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="rememberMe">
+                        <span>记住我</span>
+                    </label>
+                    <a href="#" class="forgot-password">忘记密码？</a>
+                </div>
+
+                <button type="submit" class="auth-btn">登录</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>还没有账号？<a href="register.html">立即注册</a></p>
+            </div>
+
+            <div class="auth-divider">
+                <span>其他登录方式</span>
+            </div>
+
+            <div class="social-login">
+                <button class="social-btn wechat" title="微信登录">微信</button>
+                <button class="social-btn qq" title="QQ登录">QQ</button>
+                <button class="social-btn phone" title="手机登录">手机</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="wrapper footer-inner">
+            <div>
+                <h3>财大优选</h3>
+                <p>云南财经大学网页设计课程网页作品</p>
+            </div>
+            <div>
+                <h3>服务支持</h3>
+                <p>帮助中心 / 售后服务 / 物流说明</p>
+            </div>
+            <div>
+                <h3>联系信息</h3>
+                <p>仅用于课程展示，无真实商业用途</p>
+            </div>
+        </div>
+        <p class="copyright">Copyright © 财大优选 All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // 使用Nginx代理后，可以使用相对路径避免跨域问题
+        // 开发环境: 'http://localhost:8080/api'
+        // 生产环境(Nginx): '/api'
+        const API_BASE_URL = '/api';
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            if (!username || !password) {
+                showToast('请输入用户名和密码');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/user/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    showToast('登录成功！');
+                    
+                    // 保存用户信息到localStorage
+                    if (rememberMe) {
+                        localStorage.setItem('userInfo', JSON.stringify(result.data));
+                        localStorage.setItem('userId', result.data.id);
+                    } else {
+                        sessionStorage.setItem('userInfo', JSON.stringify(result.data));
+                        sessionStorage.setItem('userId', result.data.id);
+                    }
+                    
+                    // 延迟跳转到首页
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } else {
+                    showToast(result.message || '登录失败');
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                showToast('网络错误，请稍后重试');
+            }
+        });
+        
+        // 显示提示消息
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+        
+        // 检查是否已经登录
+        window.addEventListener('DOMContentLoaded', function() {
+            const userInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo');
+            if (userInfo) {
+                // 如果已经登录，直接跳转到首页
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

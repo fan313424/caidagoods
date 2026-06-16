@@ -1,0 +1,26 @@
+{
+    "version" : "1.0",
+    "configurations" : [
+        {
+            "default" : {
+                "launchtype" : "local"
+            },
+            "playground" : "standard",
+            "type" : "uni-app:app-android"
+        },
+        {
+            "default" : {
+                "launchtype" : "local"
+            },
+            "playground" : "standard",
+            "type" : "uni-app:app-ios"
+        },
+        {
+            "default" : {
+                "launchtype" : "local"
+            },
+            "playground" : "standard",
+            "type" : "uni-app:h5"
+        }
+    ]
+}

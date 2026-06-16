@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: caida
+  # 数据库配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/caida_db?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 8080
+
+# MyBatis-Plus 配置
+mybatis-plus:
+  configuration:
+    # SQL 日志输出
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 下划线转驼峰（默认开启）
+    map-underscore-to-camel-case: true
+  # 实体类包路径（全局配置后 mapper 中无需写全类名）
+  type-aliases-package: com.caida.entity
+  # mapper XML 文件位置（如需要自定义 SQL）
+  mapper-locations: classpath*:/mapper/**/*.xml
+  global-config:
+    db-config:
+      # 主键自增策略
+      id-type: auto
+      # 逻辑删除字段
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0

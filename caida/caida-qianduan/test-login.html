@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <title>登录测试 - 财大优选</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>登录功能测试页面</h1>
+    
+    <div class="test-section">
+        <h2>1. 检查登录状态</h2>
+        <button onclick="checkLoginStatus()">检查登录状态</button>
+        <div id="loginStatus"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. 测试登录</h2>
+        <input type="text" id="username" placeholder="用户名" value="test">
+        <input type="password" id="password" placeholder="密码" value="123456">
+        <button onclick="testLogin()">登录</button>
+        <div id="loginResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. 清除登录信息</h2>
+        <button onclick="clearLogin()">清除登录信息</button>
+        <div id="clearResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. 跳转测试</h2>
+        <button onclick="goToIndex()">跳转到首页</button>
+        <button onclick="goToLogin()">跳转到登录页</button>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api';
+        
+        // 检查登录状态
+        function checkLoginStatus() {
+            const userInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo');
+            const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
+            
+            const statusDiv = document.getElementById('loginStatus');
+            
+            if (userInfo && userId) {
+                const user = JSON.parse(userInfo);
+                statusDiv.innerHTML = `
+                    <div class="test-section success">
+                        <h3>✅ 已登录</h3>
+                        <p><strong>用户ID:</strong> ${userId}</p>
+                        <p><strong>用户信息:</strong></p>
+                        <pre>${JSON.stringify(user, null, 2)}</pre>
+                        <p><strong>存储位置:</strong> ${localStorage.getItem('userInfo') ? 'localStorage' : 'sessionStorage'}</p>
+                    </div>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="test-section error">
+                        <h3>❌ 未登录</h3>
+                        <p>localStorage 和 sessionStorage 中都没有找到登录信息</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // 测试登录
+        async function testLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('loginResult');
+            
+            resultDiv.innerHTML = '<p>正在登录...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/user/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    // 保存到 localStorage
+                    localStorage.setItem('userInfo', JSON.stringify(result.data));
+                    localStorage.setItem('userId', result.data.id);
+                    
+                    resultDiv.innerHTML = `
+                        <div class="test-section success">
+                            <h3>✅ 登录成功</h3>
+                            <p><strong>返回数据:</strong></p>
+                            <pre>${JSON.stringify(result, null, 2)}</pre>
+                            <p>已保存到 localStorage</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="test-section error">
+                            <h3>❌ 登录失败</h3>
+                            <p><strong>错误信息:</strong> ${result.message}</p>
+                            <pre>${JSON.stringify(result, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="test-section error">
+                        <h3>❌ 网络错误</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // 清除登录信息
+        function clearLogin() {
+            localStorage.removeItem('userInfo');
+            localStorage.removeItem('userId');
+            sessionStorage.removeItem('userInfo');
+            sessionStorage.removeItem('userId');
+            
+            document.getElementById('clearResult').innerHTML = `
+                <div class="test-section success">
+                    <h3>✅ 已清除登录信息</h3>
+                </div>
+            `;
+        }
+        
+        // 跳转到首页
+        function goToIndex() {
+            window.location.href = 'index.html';
+        }
+        
+        // 跳转到登录页
+        function goToLogin() {
+            window.location.href = 'login.html';
+        }
+        
+        // 页面加载时自动检查登录状态
+        window.addEventListener('DOMContentLoaded', checkLoginStatus);
+    </script>
+</body>
+</html>

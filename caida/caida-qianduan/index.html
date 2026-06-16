@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <title>云南财经大学 - 财大优选</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 顶部快捷导航 -->
+    <div class="topbar">
+        <div class="wrapper topbar-inner">
+            <p>欢迎来到财大优选</p>
+            <ul class="top-links">
+                <li><a href="login.html">登录</a></li>
+                <li><a href="register.html">注册</a></li>
+                <li><a href="orders.html">我的订单</a></li>
+                <li><a href="profile.html">个人中心</a></li>
+                <li><a href="help.html">帮助中心</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 页面主体 -->
+    <div class="wrapper">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="logo-area">
+                <img src="images/caidaLOGO.jpg" alt="云南财经大学 logo">
+                <div class="site-text">
+                    <h1>财大优选</h1>
+                    <p>校园品质生活购物平台</p>
+                </div>
+            </div>
+
+            <div class="search-area">
+                <form class="search-form" action="#">
+                    <input type="text" placeholder="请输入商品名称，例如：笔记本、手机、美妆">
+                    <button type="submit">搜索</button>
+                </form>
+                <div class="hot-words">
+                    <a href="products.html?cat=电脑办公">电脑办公</a>
+                    <a href="products.html?cat=手机数码">手机数码</a>
+                    <a href="products.html?cat=美容美妆">美妆个护</a>
+                    <a href="#goods-section">新品首发</a>
+                </div>
+            </div>
+
+            <a href="#" class="cart-btn" id="cartBtn">购物车</a>
+        </header>
+
+        <!-- 主导航 -->
+        <nav class="main-nav">
+            <a href="#">首页</a>
+            <a href="#goods-section">新品首发</a>
+            <a href="products.html">全部商品</a>
+            <a href="#hot-section">热门推荐</a>
+            <a href="#topic-section">专题推荐</a>
+            <a href="product-manage.html">商品管理</a>
+            <a href="order-manage.html">订单管理</a>
+        </nav>
+
+        <!-- 首屏区域：三栏统一高度 -->
+        <section class="hero">
+            <!-- 左侧分类 -->
+            <aside class="category-panel">
+                <h2>商品分类</h2>
+                <ul>
+                    <li><a href="products.html?cat=推荐商品">优选推荐</a><span>热销精选商品</span></li>
+                    <li><a href="products.html?cat=手机数码">手机数码</a><span>手机 / 平板 / 配件</span></li>
+                    <li><a href="products.html?cat=日用百货">家用电器</a><span>生活电器 / 智能家居</span></li>
+                    <li><a href="products.html?cat=美容美妆">美容美妆</a><span>彩妆 / 护肤 / 个护</span></li>
+                    <li><a href="products.html?cat=电脑办公">电脑办公</a><span>笔记本 / 办公设备</span></li>
+                    <li><a href="products.html?cat=服装配饰">服装配饰</a><span>服装 / 鞋靴 / 箱包</span></li>
+                    <li><a href="products.html?cat=运动户外">运动户外</a><span>健身 / 露营 / 运动</span></li>
+                    <li><a href="products.html?cat=日用百货">日用百货</a><span>宿舍用品 / 餐厨好物</span></li>
+                </ul>
+            </aside>
+
+            <!-- 中间轮播：保留整张竖版海报，不再裁切 -->
+            <div class="banner-panel">
+                <div class="slider" id="slider">
+                    <div class="slide active">
+                        <img class="slide-bg" src="images/banner01.png" alt="">
+                        <img class="slide-img" src="images/banner01.png" alt="校园数码节">
+                    </div>
+                    <div class="slide">
+                        <img class="slide-bg" src="images/banner02.png" alt="">
+                        <img class="slide-img" src="images/banner02.png" alt="学习办公季">
+                    </div>
+                    <div class="slide">
+                        <img class="slide-bg" src="images/banner03.png" alt="">
+                        <img class="slide-img" src="images/banner03.png" alt="美妆生活馆">
+                    </div>
+
+                    <button class="slider-btn prev" type="button" aria-label="上一张">&#10094;</button>
+                    <button class="slider-btn next" type="button" aria-label="下一张">&#10095;</button>
+
+                    <div class="dots" aria-label="轮播图圆点切换">
+                        <span class="dot active" data-index="0"></span>
+                        <span class="dot" data-index="1"></span>
+                        <span class="dot" data-index="2"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧公告 -->
+            <aside class="notice-panel">
+                <h2>校园公告</h2>
+                <ul>
+                    <li><a href="#" style="color:#e53935;font-weight:600;">[重要] 期末网页设计作业时间安排</a></li>
+                    <li><a href="#">[通知] 期中网页设计作品提交时间安排</a></li>
+                    <li><a href="#">[活动] 数码好物校园专场限时优惠</a></li>
+                    <li><a href="#">[推荐] 学习办公专区今日更新</a></li>
+                    <li><a href="#">[上新] 新品手机数码专区正式上线</a></li>
+                    <li><a href="#">[服务] 订单查询与售后说明入口</a></li>
+                </ul>
+                <div class="notice-card">
+                    <h3>今日推荐</h3>
+                    <p>精选校园高频使用商品，满足学习、生活与日常消费需求。</p>
+                </div>
+            </aside>
+        </section>
+
+        <!-- 新品首发 -->
+        <section class="section" id="goods-section">
+            <div class="section-head">
+                <h2>新品首发</h2>
+                <a href="products.html">查看更多 &gt;</a>
+            </div>
+
+            <div class="goods-grid" id="goodsGrid">
+                <!-- 商品数据由 JS 动态加载，价格实时同步数据库 -->
+            </div>
+        </section>
+
+        <!-- 热门推荐 -->
+        <section class="section" id="hot-section">
+            <div class="section-head">
+                <h2>热门推荐</h2>
+                <a href="products.html?cat=推荐商品">更多推荐 &gt;</a>
+            </div>
+
+            <div class="recommend-layout">
+                <div class="recommend-big">
+                    <img src="images/recommend.png" alt="主推荐商品">
+                    <div class="recommend-big-text">
+                        <h3>校园数码主推</h3>
+                        <p>适合学习、设计、娱乐多场景使用</p>
+                    </div>
+                </div>
+
+                <div class="recommend-list">
+                    <div class="recommend-item">
+                        <img src="images/goods02.png" alt="轻薄办公系列">
+                        <div>
+                            <h4>轻薄办公系列</h4>
+                            <p>高颜值、易携带、续航更长</p>
+                        </div>
+                    </div>
+                    <div class="recommend-item">
+                        <img src="images/goods07.png" alt="学习网课专区">
+                        <div>
+                            <h4>学习网课专区</h4>
+                            <p>大屏清晰，适合课堂与资料整理</p>
+                        </div>
+                    </div>
+                    <div class="recommend-item">
+                        <img src="images/goods01.png" alt="美妆个护精选">
+                        <div>
+                            <h4>美妆个护精选</h4>
+                            <p>打造精致日常，提升生活幸福感</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 专题推荐 -->
+        <section class="section" id="topic-section">
+            <div class="section-head">
+                <h2>专题推荐</h2>
+                <a href="#">进入专区 &gt;</a>
+            </div>
+
+            <div class="topic-grid">
+                <a href="products.html?cat=手机数码" class="topic-card">
+                    <img src="images/iPhone_ad.png" alt="手机焕新季">
+                    <div class="topic-text">
+                        <h3>手机焕新季</h3>
+                        <p>热门手机专区，适合校园数码选购场景</p>
+                    </div>
+                </a>
+                <a href="products.html?cat=电脑办公" class="topic-card">
+                    <img src="images/goods02.png" alt="学习办公专区">
+                    <div class="topic-text">
+                        <h3>学习办公专区</h3>
+                        <p>轻薄电脑与学习设备，满足课堂和办公需求</p>
+                    </div>
+                </a>
+                <a href="products.html?cat=美容美妆" class="topic-card">
+                    <img src="images/goods09.png" alt="美妆生活馆">
+                    <div class="topic-text">
+                        <h3>美妆生活馆</h3>
+                        <p>美妆个护精选，丰富校园品质生活</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="wrapper footer-inner">
+            <div>
+                <h3>财大优选</h3>
+                <p>云南财经大学网页设计课程网页作品</p>
+            </div>
+            <div>
+                <h3>服务支持</h3>
+                <p>帮助中心 / 售后服务 / 物流说明</p>
+            </div>
+            <div>
+                <h3>联系信息</h3>
+                <p>仅用于课程展示，无真实商业用途</p>
+            </div>
+            <div>
+                <h3>管理功能</h3>
+                <p><a href="product-manage.html" style="color:#ddd;">商品管理</a> / <a href="order-manage.html" style="color:#ddd;">订单管理</a></p>
+            </div>
+        </div>
+        <p class="copyright">Copyright © 财大优选 All Rights Reserved</p>
+    </footer>
+
+    <!-- 回到顶部 -->
+    <button id="backTop" type="button" aria-label="回到顶部">↑</button>
+
+    <!-- 购物车侧边栏 -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>购物车 (<span id="cartItemCount">0</span>)</h2>
+            <button class="cart-close" id="cartClose">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- 购物车商品将在这里动态渲染 -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>总计：</span>
+                <span class="total-price" id="totalPrice">￥0.00</span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">去结算</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="ai-chat.js"></script>
+</body>
+</html>

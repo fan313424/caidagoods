@@ -1,0 +1,51 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/index/index",
+    "pages/product/list",
+    "pages/product/add",
+    "pages/product/edit",
+    "pages/user/list",
+    "pages/employee/list",
+    "pages/order/list"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "财大优选管理端",
+    "navigationBarBackgroundColor": "#FF6B35",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#FF6B35",
+    "borderStyle": "black",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/product/list",
+        "text": "商品",
+        "iconPath": "static/tabbar/product.png",
+        "selectedIconPath": "static/tabbar/product-active.png"
+      },
+      {
+        "pagePath": "pages/user/list",
+        "text": "用户",
+        "iconPath": "static/tabbar/user.png",
+        "selectedIconPath": "static/tabbar/user-active.png"
+      },
+      {
+        "pagePath": "pages/order/list",
+        "text": "订单",
+        "iconPath": "static/tabbar/order.png",
+        "selectedIconPath": "static/tabbar/order-active.png"
+      }
+    ]
+  }
+}

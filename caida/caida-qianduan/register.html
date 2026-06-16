@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="images/caidaLOGO.jpg">
+    <title>注册 - 财大优选</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 顶部快捷导航 -->
+    <div class="topbar">
+        <div class="wrapper topbar-inner">
+            <p>欢迎来到财大优选</p>
+            <ul class="top-links">
+                <li><a href="login.html">登录</a></li>
+                <li><a href="register.html">注册</a></li>
+                <li><a href="index.html">返回首页</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 注册主体区域 -->
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <img src="images/caidaLOGO.jpg" alt="财大优选Logo" class="auth-logo">
+                <h2>用户注册</h2>
+                <p>加入财大优选，开启校园品质生活</p>
+            </div>
+
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label for="username">用户名 <span class="required">*</span></label>
+                    <input type="text" id="username" name="username" placeholder="请输入用户名（4-20位字符）" required minlength="4" maxlength="20">
+                    <span class="form-tip">用户名只能包含字母、数字和下划线</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密码 <span class="required">*</span></label>
+                    <input type="password" id="password" name="password" placeholder="请输入密码（6-20位字符）" required minlength="6" maxlength="20">
+                    <span class="form-tip">密码需要包含字母和数字</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">确认密码 <span class="required">*</span></label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="请再次输入密码" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nickname">昵称</label>
+                    <input type="text" id="nickname" name="nickname" placeholder="请输入昵称（选填）">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">邮箱</label>
+                    <input type="email" id="email" name="email" placeholder="请输入邮箱地址（选填）">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">手机号</label>
+                    <input type="tel" id="phone" name="phone" placeholder="请输入手机号（选填）" pattern="[0-9]{11}">
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label agreement-label">
+                        <input type="checkbox" id="agreement" required>
+                        <span>我已阅读并同意<a href="#" class="agreement-link">《用户服务协议》</a>和<a href="#" class="agreement-link">《隐私政策》</a></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="auth-btn">注册</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>已有账号？<a href="login.html">立即登录</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="wrapper footer-inner">
+            <div>
+                <h3>财大优选</h3>
+                <p>云南财经大学网页设计课程网页作品</p>
+            </div>
+            <div>
+                <h3>服务支持</h3>
+                <p>帮助中心 / 售后服务 / 物流说明</p>
+            </div>
+            <div>
+                <h3>联系信息</h3>
+                <p>仅用于课程展示，无真实商业用途</p>
+            </div>
+        </div>
+        <p class="copyright">Copyright © 财大优选 All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // 使用Nginx代理后，可以使用相对路径避免跨域问题
+        // 开发环境: 'http://localhost:8080/api'
+        // 生产环境(Nginx): '/api'
+        const API_BASE_URL = '/api';
+
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const nickname = document.getElementById('nickname').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const agreement = document.getElementById('agreement').checked;
+            
+            // 验证表单
+            if (!username || !password || !confirmPassword) {
+                showToast('请填写必填项');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showToast('两次输入的密码不一致');
+                return;
+            }
+            
+            if (!agreement) {
+                showToast('请同意用户服务协议和隐私政策');
+                return;
+            }
+            
+            // 验证用户名格式
+            if (!/^[a-zA-Z0-9_]{4,20}$/.test(username)) {
+                showToast('用户名格式不正确，只能包含字母、数字和下划线（4-20位）');
+                return;
+            }
+            
+            // 验证密码格式
+            if (!/(?=.*[a-zA-Z])(?=.*\d)/.test(password)) {
+                showToast('密码需要包含字母和数字');
+                return;
+            }
+            
+            try {
+                // 构建用户数据
+                const userData = {
+                    username: username,
+                    password: password,
+                    nickname: nickname || username,
+                    email: email || null,
+                    phone: phone || null
+                };
+                
+                const response = await fetch(`${API_BASE_URL}/user/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                const result = await response.json();
+                
+                if (result.code === 200) {
+                    showToast('注册成功！即将跳转到登录页面');
+                    
+                    // 延迟跳转到登录页面
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                } else {
+                    showToast(result.message || '注册失败');
+                }
+            } catch (error) {
+                console.error('注册错误:', error);
+                showToast('网络错误，请稍后重试');
+            }
+        });
+        
+        // 检查是否已经登录
+        window.addEventListener('DOMContentLoaded', function() {
+            const userInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo');
+            if (userInfo) {
+                // 如果已经登录，直接跳转到首页
+                window.location.href = 'index.html';
+            }
+        });
+        let checkUsernameTimer = null;
+        document.getElementById('username').addEventListener('input', function() {
+            const username = this.value.trim();
+            
+            // 清除之前的定时器
+            if (checkUsernameTimer) {
+                clearTimeout(checkUsernameTimer);
+            }
+            
+            // 如果用户名长度符合要求，进行检查
+            if (username.length >= 4) {
+                checkUsernameTimer = setTimeout(async () => {
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/user/check-username?username=${encodeURIComponent(username)}`);
+                        const result = await response.json();
+                        
+                        if (result.code === 200 && result.data.exists) {
+                            showToast('该用户名已被使用');
+                        }
+                    } catch (error) {
+                        console.error('检查用户名错误:', error);
+                    }
+                }, 500);
+            }
+        });
+        
+        // 显示提示消息
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
