@@ -1,8 +1,8 @@
 # 第一阶段：构建
 FROM maven:3.9-amazoncorretto-17 AS build
 WORKDIR /app
-COPY pom.xml .
-COPY src ./src
+COPY caida/pom.xml .
+COPY caida/src ./src
 RUN mvn clean package -DskipTests -B
 
 # 第二阶段：运行
