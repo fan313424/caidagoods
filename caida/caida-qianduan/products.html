@@ -240,7 +240,7 @@
             }
             if (kw) list = list.filter(p => p.name.toLowerCase().includes(kw) || (p.description||'').toLowerCase().includes(kw));
 
-            // 排序
+            // ===== 排序 =====
             const sortBy = document.getElementById('sortSelect').value;
             if (sortBy === 'price_asc') list.sort((a,b) => (a.price||0) - (b.price||0));
             else if (sortBy === 'price_desc') list.sort((a,b) => (b.price||0) - (a.price||0));
