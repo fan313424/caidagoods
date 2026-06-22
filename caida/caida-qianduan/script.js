@@ -513,4 +513,37 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
+
+    // =========================
+    // PC/移动端视图切换
+    // =========================
+    const viewToggleBtn = document.getElementById("viewToggleBtn");
+    const mobileFrame = document.querySelector(".mobile-frame");
+    const mobileFrameIframe = document.getElementById("mobileFrame");
+
+    if (viewToggleBtn && mobileFrame && mobileFrameIframe) {
+        viewToggleBtn.setAttribute("data-tooltip", "切换到手机版");
+
+        viewToggleBtn.addEventListener("click", function () {
+            const body = document.body;
+            const isMobile = body.classList.contains("mobile-sim");
+
+            if (isMobile) {
+                // 切回 PC 版
+                body.classList.remove("mobile-sim");
+                viewToggleBtn.setAttribute("data-tooltip", "切换到手机版");
+                // 延迟清空 iframe，避免某些浏览器报错
+                setTimeout(function () {
+                    mobileFrameIframe.src = "";
+                }, 300);
+            } else {
+                // 切换到移动端版
+                body.classList.add("mobile-sim");
+                viewToggleBtn.setAttribute("data-tooltip", "切换回PC版");
+                // iframe 加载当前页，在 390px 宽度下触发响应式 CSS
+                // 加时间戳强制刷新，避免浏览器使用空白缓存
+                mobileFrameIframe.src = window.location.href.split('#')[0] + '?mobile_view=' + Date.now();
+            }
+        });
+    }
 });

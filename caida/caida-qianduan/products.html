@@ -42,16 +42,25 @@
         .empty-state { text-align: center; padding: 80px 20px; grid-column: 1/-1; }
         .result-info { font-size: 13px; color: var(--text-light); margin-bottom: 16px; }
 
-        @media (max-width: 1100px) { .goods-grid-full { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 1100px) { .goods-grid-full { grid-template-columns: repeat(5, 1fr); } }
+        @media (max-width: 900px) { .goods-grid-full { grid-template-columns: repeat(4, 1fr); gap: 8px; } }
         @media (max-width: 768px) {
             .products-layout { grid-template-columns: 1fr; }
             .filter-sidebar { position: static; display: flex; flex-wrap: wrap; gap: 4px; padding: 12px; }
             .filter-sidebar h3 { width: 100%; border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
             .filter-sidebar a { border-left: none; border-radius: 20px; padding: 6px 14px; font-size: 13px; }
             .filter-sidebar a.active { background: var(--main-red); color: #fff; }
-            .goods-grid-full { grid-template-columns: repeat(2, 1fr); }
+            .goods-grid-full { grid-template-columns: repeat(4, 1fr); gap: 6px; }
         }
-        @media (max-width: 480px) { .goods-grid-full { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) { .goods-grid-full { grid-template-columns: repeat(4, 1fr); gap: 4px; } }
+        @media (max-width: 600px) {
+            .goods-card { padding: 5px; border-radius: 8px; }
+            .goods-card img { height: 75px; border-radius: 6px; }
+            .goods-card h3 { font-size: 11px; margin-top: 4px; }
+            .goods-card .desc { font-size: 10px; min-height: 0; margin-top: 2px; }
+            .goods-card .price { font-size: 13px; margin-top: 3px; }
+            .goods-card .add-to-cart-btn { padding: 4px; font-size: 10px; margin-top: 4px; border-radius: 4px; }
+        }
     </style>
 </head>
 <body>
@@ -80,6 +89,7 @@
                 <a href="orders.html">我的订单</a>
                 <a href="profile.html">个人中心</a>
             </nav>
+            <a href="#" class="cart-btn" id="cartBtn" style="flex-shrink:0;margin-left:16px;">🛒 购物车<span id="cartCount" style="background:#ff4757;color:#fff;border-radius:50%;padding:2px 7px;font-size:12px;margin-left:6px;display:none;">0</span></a>
         </div>
     </header>
 
@@ -121,6 +131,26 @@
     </footer>
 
     <button id="backTop" type="button" aria-label="回到顶部">↑</button>
+
+    <!-- 购物车遮罩层 -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <!-- 购物车侧边栏 -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>购物车 (<span id="cartItemCount">0</span>)</h2>
+            <button class="cart-close" id="cartClose">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>购物车是空的</p></div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>总计：</span>
+                <span class="total-price" id="totalPrice">￥0.00</span>
+            </div>
+            <button class="checkout-btn" id="checkoutBtn">去结算</button>
+        </div>
+    </div>
 
     <script>
         const userInfo = localStorage.getItem('userInfo') || sessionStorage.getItem('userInfo');
@@ -238,6 +268,131 @@
             setTimeout(()=>t.classList.add('show'),10);
             setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},2000);
         }
+
+        // =========================
+        // 购物车功能
+        // =========================
+        const cartBtn = document.getElementById('cartBtn');
+        const cartSidebar = document.getElementById('cartSidebar');
+        const cartClose = document.getElementById('cartClose');
+        const cartOverlay = document.getElementById('cartOverlay');
+        const cartCount = document.getElementById('cartCount');
+
+        cartBtn.addEventListener('click', function(e) { e.preventDefault(); openCart(); });
+        cartClose.addEventListener('click', closeCart);
+        cartOverlay.addEventListener('click', closeCart);
+
+        function openCart() {
+            cartSidebar.classList.add('active');
+            cartOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            loadCartFromServer();
+        }
+        function closeCart() {
+            cartSidebar.classList.remove('active');
+            cartOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        async function loadCartFromServer() {
+            try {
+                const r = await fetch(`${API_BASE_URL}/cart?userId=${CURRENT_USER_ID}`);
+                const j = await r.json();
+                if (j.code === 200) renderCart(j.data);
+            } catch(e) {}
+        }
+
+        async function updateCartCountFromServer() {
+            try {
+                const r = await fetch(`${API_BASE_URL}/cart/count?userId=${CURRENT_USER_ID}`);
+                const j = await r.json();
+                if (j.code === 200 && cartCount) {
+                    const cnt = j.data.count || 0;
+                    cartCount.textContent = cnt;
+                    cartCount.style.display = cnt > 0 ? 'inline-block' : 'none';
+                }
+            } catch(e) {}
+        }
+
+        async function removeFromCart(cartId) {
+            try {
+                const r = await fetch(`${API_BASE_URL}/cart/remove/${cartId}`, { method: 'DELETE' });
+                const j = await r.json();
+                if (j.code === 200) { showToast('已移除'); loadCartFromServer(); updateCartCountFromServer(); }
+            } catch(e) { showToast('网络错误'); }
+        }
+
+        async function updateQuantity(cartId, change) {
+            const el = document.querySelector(`.cart-item[data-id="${cartId}"]`);
+            if (!el) return;
+            const cur = parseInt(el.querySelector('.quantity-display').textContent);
+            const nq = cur + change;
+            if (nq <= 0) { removeFromCart(cartId); return; }
+            try {
+                const r = await fetch(`${API_BASE_URL}/cart/update`, {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cartId, quantity: nq })
+                });
+                const j = await r.json();
+                if (j.code === 200) { loadCartFromServer(); updateCartCountFromServer(); }
+            } catch(e) { showToast('网络错误'); }
+        }
+
+        function renderCart(cartList) {
+            const el = document.getElementById('cartItems');
+            const tp = document.getElementById('totalPrice');
+            const cic = document.getElementById('cartItemCount');
+            if (!cartList || cartList.length === 0) {
+                el.innerHTML = '<div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>购物车是空的</p></div>';
+                if (tp) tp.textContent = '￥0.00';
+                if (cic) cic.textContent = '0';
+                if (cartCount) { cartCount.textContent = '0'; cartCount.style.display = 'none'; }
+                return;
+            }
+            el.innerHTML = cartList.map(item => `
+                <div class="cart-item" data-id="${item.id}">
+                    <img src="${item.productImage}" alt="${item.productName}" class="cart-item-image">
+                    <div class="cart-item-info">
+                        <div><div class="cart-item-name">${item.productName}</div>
+                        <div class="cart-item-price">￥${item.productPrice.toFixed(2)}</div></div>
+                        <div class="cart-item-controls">
+                            <button class="quantity-btn dec" data-id="${item.id}">-</button>
+                            <span class="quantity-display">${item.quantity}</span>
+                            <button class="quantity-btn inc" data-id="${item.id}">+</button>
+                            <button class="remove-item" data-id="${item.id}">&times;</button>
+                        </div>
+                    </div>
+                </div>`).join('');
+            el.querySelectorAll('.dec').forEach(b => b.addEventListener('click', () => updateQuantity(parseInt(b.dataset.id), -1)));
+            el.querySelectorAll('.inc').forEach(b => b.addEventListener('click', () => updateQuantity(parseInt(b.dataset.id), 1)));
+            el.querySelectorAll('.remove-item').forEach(b => b.addEventListener('click', () => removeFromCart(parseInt(b.dataset.id))));
+            const total = cartList.reduce((s, item) => s + parseFloat(item.totalPrice), 0);
+            if (tp) tp.textContent = '￥' + total.toFixed(2);
+            const cnt = cartList.length;
+            if (cic) cic.textContent = cnt;
+            if (cartCount) { cartCount.textContent = cnt; cartCount.style.display = cnt > 0 ? 'inline-block' : 'none'; }
+        }
+
+        document.getElementById('checkoutBtn').addEventListener('click', async function() {
+            if (!userInfo) { showToast('请先登录'); return; }
+            try {
+                const cr = await fetch(`${API_BASE_URL}/cart?userId=${CURRENT_USER_ID}`);
+                const cj = await cr.json();
+                if (cj.code !== 200 || !cj.data || cj.data.length === 0) { showToast('购物车是空的！'); return; }
+                const cor = await fetch(`${API_BASE_URL}/order/checkout`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: CURRENT_USER_ID })
+                });
+                const coj = await cor.json();
+                if (coj.code === 200) {
+                    const amt = coj.data.totalAmount ? parseFloat(coj.data.totalAmount).toFixed(2) : '0.00';
+                    showToast(`支付成功！订单总额：￥${amt}`);
+                    setTimeout(() => { loadCartFromServer(); updateCartCountFromServer(); }, 500);
+                } else { showToast(coj.message || '结算失败'); }
+            } catch(e) { showToast('网络错误'); }
+        });
+
+        updateCartCountFromServer();
 
         const btt = document.getElementById('backTop');
         if(btt){window.addEventListener('scroll',()=>btt.style.display=window.scrollY>300?'block':'none');btt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));}
