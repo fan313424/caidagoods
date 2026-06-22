@@ -14,6 +14,17 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.Statement;
 
+/**
+ * 数据初始化器
+ *
+ * 职责：应用启动时自动执行数据库初始化任务
+ * - 自动添加缺失的数据库列
+ * - 初始化默认管理员账号
+ * - 确保管理员角色权限正确
+ *
+ * @author 团队
+ * @since 1.0
+ */
 @Component
 public class DataInitializer implements CommandLineRunner {
 
